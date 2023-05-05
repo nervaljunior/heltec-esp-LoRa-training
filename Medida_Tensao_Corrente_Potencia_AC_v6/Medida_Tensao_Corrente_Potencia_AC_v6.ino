@@ -20,8 +20,6 @@
 
 #include <heltec.h>
 #include <Wire.h>
-#include <WiFi.h>
-#include <WebServer.h>
 
 #define MODO 0
 /* Protótipo da função */
@@ -42,30 +40,10 @@ const float offsetIAC = 1395.393991;
 const int RelePin = 23;         // pino ao qual o Módulo Relé está conectado
 String statusRele = "OFF"; // variavel para ler dados recebidos pela serial
 String off = "OFF";
-String packet;
-
-/*
-  Nome da função: getTemp
-  objetivo: ler a temperatura e atibiu a variável currentTemp.
-*/
-
-/*Put your SSID & Password*/
-const char *ssid = "ESP32-AP-Temp"; // Enter SSID here
-const char *password = "getTEMP32"; // Enter Password here (min. 8 characters)
-
-/* Put IP Address details */
-IPAddress local_ip(192, 168, 1, 1);
-IPAddress gateway(192, 168, 1, 1);
-IPAddress subnet(255, 255, 255, 0);
-
-WebServer server(80);
-/*
-  Nome da função: sendPacket
-  objetivo: envia a temperatura via LoRa armazenada na variável currentTemp.
-*/
 
 
-  void ativarRele()
+
+ void ativarRele()
 {
   if (statusRele == "OFF")
   {
@@ -85,46 +63,7 @@ WebServer server(80);
     digitalWrite(RelePin, LOW);
   }
 }
-/*
-void setup()
-{
-  Serial.begin(BAND);
-  pinMode(RelePin, OUTPUT);   // seta o pino como saída
-  digitalWrite(RelePin, LOW); // seta o pino com nivel logico baixo
-  pinMode(LED, OUTPUT);       // inicializa o LED
 
-  Heltec.begin(true /*Habilita o Display*/, true /*Heltec.Heltec.Heltec.LoRa Disable*/, true /*Habilita debug Serial*/, true /*Habilita o PABOOST*/, BAND /*Frequência BAND*/);
-/*
-  Heltec.display->init();
-  Heltec.display->flipScreenVertically();
-  Heltec.display->setFont(ArialMT_Plain_16);
-  Heltec.display->clear();
-  Heltec.display->drawString(33, 5, "Iniciado");
-  Heltec.display->drawString(10, 30, "com Sucesso!");
-  Heltec.display->display();
-  delay(1000);
-
-  dht.setup(17, DHTesp::DHT11); // inicializa o DHT no pino 17
-
-  currentTemp = dht.getTemperature();
-
-  // Setup do Servidor Web
-
-  // Connect to Wi-Fi network with SSID and password
-  Serial.print("Setting AP (Access Point)…");
-
-  // Remove the password parameter, if you want the AP (Access Point) to be open
-  WiFi.mode(WIFI_AP);
-  WiFi.softAPConfig(local_ip, gateway, subnet);
-  WiFi.softAP(ssid, password);
-
-  server.on("/", handle_OnConnect);
-  server.on("/rele", handle_OnRele);
-  server.onNotFound(handle_NotFound);
-
-  server.begin();
-  Serial.println("HTTP server started");
-}*/
 void setup()
 {
   Serial.begin(115200); //Iniciando a comunicação serial
@@ -298,20 +237,4 @@ delay(1000);
   LoRa.endPacket();
   delay(1000);
 #endif
-}
-
-
-void handle_OnRele() {
-  ativarRele();
-  server.send(200, "text/plain", (String)statusRele);
-}
-
-void handle_OnConnect()
-{
-  server.send(200, "text/plain", (String)currentTemp);
-}
-
-void handle_NotFound()
-{
-  server.send(404, "text/plain", "Not found");
 }
